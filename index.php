@@ -42,17 +42,27 @@ switch ($operacao) {
 <form method="POST" action=""> 
 
      <label>Primeiro número</label><br>
-     <input type="text" name="n1"><br><br>
+     <input type="number" step="any" name="n1" required><br><br>
 
-     <label>Operação</label><br>
-     <input type="text" name="op"><br><br>
+     <label>Escolha a Operação:</label><br>
+     <input type="radio" id="soma" name="op" value="soma" checked>
+     <label for="soma">Soma (+)</label><br>
+
+     <input type="radio" id="sub" name="op" value="subtracao">
+     <label for="sub">Subtração (-)</label><br>
+
+     <input type="radio" id="mult" name="op" value="multiplicacao">
+     <label for="mult">Multiplicação (*)</label><br>
+
+     <input type="radio" id="div" name="op" value="divisao">
+     <label for="div">Divisão (/)</label><br><br>
 
      <label>Segundo número</label><br>
-     <input type="text" name="n2"><br><br>
+     <input type="number" step="any" name="n2" required><br><br>
 
      <input type="submit" value="Calcular">
 
- </form>
+</form>
 
  <hr>
 
