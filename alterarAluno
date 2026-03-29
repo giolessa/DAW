@@ -1,0 +1,66 @@
+<?php
+$msg = "";
+$aluno = ["", "", ""]; 
+
+if (isset($_POST['botaoBuscar'])) {
+    $mat = $_POST["matricula"];
+    $arq = fopen("alunos.csv", "r") or die("Erro ao abrir arquivo!");
+    while (($dados = fgetcsv($arq, 0, ";")) !== FALSE) {
+        if ($dados[0] == $mat) {
+            $aluno = $dados;
+            $msg = "Achei o aluno!";
+            break;
+        }
+    }
+    fclose($arq);
+    if ($aluno[0] == "") $msg = "Matrícula não existe";
+}
+
+if (isset($_POST['botaoAlterar'])) {
+    $mat  = $_POST["matricula"];
+    $nome = $_POST["nome"];
+    $mail = $_POST["email"];
+    $temp = [];
+    
+    $arq = fopen("alunos.csv", "r") or die("Erro de leitura");
+    while (($dados = fgetcsv($arq, 0, ";")) !== FALSE) {
+        if ($dados[0] == $mat) {
+            $temp[] = [$mat, $nome, $mail];
+        } else {
+            $temp[] = $dados;
+        }
+    }
+    fclose($arq);
+
+    $arq = fopen("alunos.csv", "w") or die("Erro na escrita");
+    foreach ($temp as $linha) {
+        fputcsv($arq, $linha, ";");
+    }
+    fclose($arq);
+    $msg = "Alterado com sucesso!";
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+    <h1>Alterar Aluno</h1>
+
+    <form method="POST">
+        Matrícula: <input type="text" name="matricula" value="<?php echo $aluno[0]; ?>">
+        <input type="submit" name="botaoBuscar" value="Buscar">
+    </form>
+
+    <hr>
+
+    <form method="POST">
+        <input type="hidden" name="matricula" value="<?php echo $aluno[0]; ?>">
+        Nome: <input type="text" name="nome" value="<?php echo $aluno[1]; ?>"><br><br>
+        E-mail: <input type="text" name="email" value="<?php echo $aluno[2]; ?>"><br><br>
+        <input type="submit" name="botaoAlterar" value="Confirmar Alteração" <?php if($aluno[0]=="") echo "disabled"; ?>>
+    </form>
+
+    <p><strong><?php echo $msg; ?></strong></p>
+</body>
+</html>
