@@ -1,0 +1,18 @@
+GET e POST são doos métodos de troca de dados entre navegador e o servidor. Tipo, imaginando que o formulário é um formulário do google, na hora de enviar, os dados vão para o servidor. 
+
+Eles podem ser enviados pelo método GET e pelo método POST.
+
+O método GET envia as informações pela URL. 
+
+- Os dados aparecem na barra de endereço
+- Não é seguro, então não é recomendado ser usado apra dados seguros ou senhas
+- Tem um limite de caracteres que dependem do navegador
+- Fica no histórico do navegador e pode ser favoritado
+- É bom para ser usado em pesquisas, filtros ou navegação onde o usuário pode querer compartilhar o link exato do resultado
+
+O método POST envia as informações dentro do corpo de requisição HTTP. Tipo enviar uma carta em um envelope lacrado.
+
+- Os dados não aparecem na URL
+- É mais seguro que o GET, já que não mostra os dados na barra de endereço, mas ainda precisa do HTTPS para ser realmente privado
+- Não é salvo no histórico e não pode ser favoritado com os dados preenchidos
+- É legal usar em formulários de login, envio de arquivos, cadastros e ações que alteram os dados no servidor
