@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
   
 <h1>Adicionar Nova Disciplina</h1>
   
-<form action="adicionarDisciplina.php" method="POST">
+<form action="addDisciplina.php" method="POST">
     Nome da Disciplina: <input type="text" name="nome" required>
     <br><br>
     Sigla da Disciplina: <input type="text" name="sigla" required>
