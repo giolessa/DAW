@@ -3,7 +3,6 @@ $msg = "";
 $aluno = ["", "", ""];
 $arquivo_nome = "alunos.csv";
 
-// --- LÓGICA DE BUSCA ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["buscar"])) {
     $mat = $_POST["matricula"];
     
@@ -23,8 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["buscar"])) {
         $msg = "Aluno não encontrado!";
     }
 }
-
-// --- LÓGICA DE EXCLUSÃO ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["excluir"])) {
     $mat = $_POST["matricula"];
     $temp = [];
@@ -44,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["excluir"])) {
         if ($encontrado) {
             $arquivo = fopen($arquivo_nome, "w");
             foreach ($temp as $linha) {
-                fputcsv($arquivo, $linha, ";"); // Usa fputcsv para manter o padrão
+                fputcsv($arquivo, $linha, ";"); 
             }
             fclose($arquivo);
             $msg = "Aluno excluído com sucesso!";
