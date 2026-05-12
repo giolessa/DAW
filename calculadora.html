@@ -1,0 +1,240 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap');
+  .calc-wrap { display:flex; justify-content:center; padding:2rem 0; }
+  .calc {
+    background:#0f0f0f;
+    border-radius:24px;
+    padding:20px;
+    width:320px;
+    border:1px solid #1f1f1f;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .display {
+    background:#161616;
+    border-radius:14px;
+    padding:18px 20px 14px;
+    margin-bottom:16px;
+    min-height:96px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    border:1px solid #222;
+  }
+  .historico {
+    font-family:'DM Mono',monospace;
+    font-size:13px;
+    color:#666;
+    min-height:18px;
+    text-align:right;
+    letter-spacing:0.03em;
+  }
+  .valor-atual {
+    font-family:'Syne',sans-serif;
+    font-size:40px;
+    font-weight:700;
+    color:#f0f0f0;
+    text-align:right;
+    letter-spacing:-0.02em;
+    line-height:1;
+    overflow:hidden;
+  }
+  .grade-botoes {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+  .botao {
+    border:none;
+    border-radius:12px;
+    height:64px;
+    font-family:'Syne',sans-serif;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    transition: all 0.1s ease;
+    user-select:none;
+  }
+  .botao:active { transform:scale(0.95); }
+  .btn-numero {
+    background:#1c1c1c;
+    color:#e8e8e8;
+    border:1px solid #2a2a2a;
+  }
+  .btn-numero:hover { background:#282828; }
+  .btn-acao {
+    background:#2a1f00;
+    color:#f5a623;
+    border:1px solid #3d2e00;
+    font-size:22px;
+  }
+  .btn-limpar {
+    background:#1f1214;
+    color:#e2556a;
+    border:1px solid #2f1820;
+  }
+  .btn-igual {
+    background:#f5a623;
+    color:#0f0f0f;
+    grid-column: span 1;
+  }
+  .btn-zero { grid-column: span 2; }
+  .etiqueta {
+    font-family:'DM Mono',monospace;
+    font-size:10px;
+    color:#444;
+    text-align:center;
+    margin-bottom:8px;
+    letter-spacing:0.15em;
+  }
+</style>
+
+<div class="calc-wrap">
+  <div>
+    <p class="etiqueta">CALCULADORA PRO</p>
+    <div class="calc">
+      <div class="display">
+        <div class="historico" id="painel-historico"></div>
+        <div class="valor-atual" id="painel-principal">0</div>
+      </div>
+      <div class="grade-botoes">
+        <button class="botao btn-limpar" onclick="limparTudo()">C</button>
+        <button class="botao btn-limpar" onclick="deletarUltimo()">⌫</button>
+        <button class="botao btn-acao" onclick="definirOperador('%')">%</button>
+        <button class="botao btn-acao" onclick="definirOperador('÷')">÷</button>
+
+        <button class="botao btn-numero" onclick="digitar('7')">7</button>
+        <button class="botao btn-numero" onclick="digitar('8')">8</button>
+        <button class="botao btn-numero" onclick="digitar('9')">9</button>
+        <button class="botao btn-acao" onclick="definirOperador('×')">×</button>
+
+        <button class="botao btn-numero" onclick="digitar('4')">4</button>
+        <button class="botao btn-numero" onclick="digitar('5')">5</button>
+        <button class="botao btn-numero" onclick="digitar('6')">6</button>
+        <button class="botao btn-acao" onclick="definirOperador('−')">−</button>
+
+        <button class="botao btn-numero" onclick="digitar('1')">1</button>
+        <button class="botao btn-numero" onclick="digitar('2')">2</button>
+        <button class="botao btn-numero" onclick="digitar('3')">3</button>
+        <button class="botao btn-acao" onclick="definirOperador('+')">+</button>
+
+        <button class="botao btn-numero btn-zero" onclick="digitar('0')">0</button>
+        <button class="botao btn-numero" onclick="inserirVirgula()">,</button>
+        <button class="botao btn-igual" onclick="executarCalculo()">=</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Objeto de controle da calculadora
+  let calc = {
+    display: '0',
+    memoria: '',
+    operacao: null,
+    esperandoSegundoNumero: false
+  };
+
+  const telaPrincipal = document.getElementById('painel-principal');
+  const telaHistorico = document.getElementById('painel-historico');
+
+  function atualizarInterface() {
+    telaPrincipal.textContent = calc.display;
+    if (calc.operacao && calc.memoria) {
+      telaHistorico.textContent = `${calc.memoria} ${calc.operacao}`;
+    } else {
+      telaHistorico.textContent = '';
+    }
+  }
+
+  function digitar(num) {
+    if (calc.esperandoSegundoNumero) {
+      calc.display = num;
+      calc.esperandoSegundoNumero = false;
+    } else {
+      calc.display = calc.display === '0' ? num : calc.display + num;
+    }
+    atualizarInterface();
+  }
+
+  function inserirVirgula() {
+    if (calc.esperandoSegundoNumero) {
+      calc.display = '0,';
+      calc.esperandoSegundoNumero = false;
+      return;
+    }
+    if (!calc.display.includes(',')) {
+      calc.display += ',';
+    }
+    atualizarInterface();
+  }
+
+  function definirOperador(op) {
+    if (calc.operacao !== null && !calc.esperandoSegundoNumero) {
+      executarCalculo(false);
+    }
+    calc.memoria = calc.display;
+    calc.operacao = op;
+    calc.esperandoSegundoNumero = true;
+    atualizarInterface();
+  }
+
+  function executarCalculo(finalizar = true) {
+    if (!calc.operacao || calc.esperandoSegundoNumero) return;
+
+    const n1 = parseFloat(calc.memoria.replace(',', '.'));
+    const n2 = parseFloat(calc.display.replace(',', '.'));
+    let resultado = 0;
+
+    switch (calc.operacao) {
+      case '+': resultado = n1 + n2; break;
+      case '−': resultado = n1 - n2; break;
+      case '×': resultado = n1 * n2; break;
+      case '÷': resultado = n2 !== 0 ? n1 / n2 : 'Erro'; break;
+      case '%': resultado = n1 * (n2 / 100); break;
+    }
+
+    if (resultado === 'Erro') {
+      calc.display = 'Erro';
+    } else {
+      // Formata para evitar dízimas gigantescas
+      calc.display = Number(resultado.toFixed(8)).toString().replace('.', ',');
+    }
+
+    if (finalizar) {
+      calc.operacao = null;
+      calc.memoria = '';
+    } else {
+      calc.memoria = calc.display;
+    }
+    
+    calc.esperandoSegundoNumero = finalizar;
+    atualizarInterface();
+  }
+
+  function limparTudo() {
+    calc = { display: '0', memoria: '', operacao: null, esperandoSegundoNumero: false };
+    atualizarInterface();
+  }
+
+  function deletarUltimo() {
+    if (calc.display === 'Erro' || calc.display.length === 1) {
+      calc.display = '0';
+    } else {
+      calc.display = calc.display.slice(0, -1);
+    }
+    atualizarInterface();
+  }
+
+  // Atalhos de teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') digitar(e.key);
+    if (['+', '-', '*', '/', '%'].includes(e.key)) {
+      const depara = {'*': '×', '/': '÷', '-': '−'};
+      definirOperador(depara[e.key] || e.key);
+    }
+    if (e.key === 'Enter' || e.key === '=') executarCalculo();
+    if (e.key === 'Backspace') deletarUltimo();
+    if (e.key === 'Escape') limparTudo();
+    if (e.key === ',' || e.key === '.') inserirVirgula();
+  });
+</script>
